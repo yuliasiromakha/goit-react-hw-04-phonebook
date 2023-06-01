@@ -1,18 +1,20 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import PhonebookTitle from "../PhonebookTitle/PhonebookTitle";
 import { nanoid } from "nanoid";
 import AddContactButton from "components/AddContactButton/AddContactButton";
 
 class ContactForm extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      contacts: [],
-      filter: "",
-      name: "",
-      number: "",
-    };
-  }
+  static propTypes = {
+    onAddContact: PropTypes.func.isRequired,
+  };
+
+  state = {
+    contacts: [],
+    filter: "",
+    name: "",
+    number: "",
+  };
 
   handleInputChange = (event) => {
     const { name, value } = event.target;

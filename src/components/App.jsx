@@ -4,14 +4,14 @@ import ContactForm from "./ContactForm/ContactForm";
 import ContactList from "./ContactList/ContactList";
 import FilterContact from "./FilterContact/FilterContact";
 
+import './general.css'
+
 export class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+
+  state = {
       contacts: [],
       filter: "",
     };
-  }
 
   addContact = (contact) => {
     const { contacts } = this.state;
@@ -37,6 +37,24 @@ export class App extends Component {
     this.setState({ filter });
   };
 
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+
+    if (parsedContacts) {
+      this.setState({contacts: parsedContacts })
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+
+    if (this.state.contacts !== prevState.contacts ) {
+      console.log('contacts were updated');
+
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
+
   render() {
     const { contacts, filter } = this.state;
 
@@ -45,24 +63,10 @@ export class App extends Component {
     );
 
     return (
-      <div
-        style={{
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          fontSize: 40,
-          color: "#010101",
-        }}
-      >
-        <div
-          style={{
-            border: "1px solid black",
-            padding: "15px 30px",
-            width: 350,
-          }}
-        >
+      <div className="general__positioning">
+
+        <div className="border__style">
+          
           <PhonebookTitle
             title="Name"
             styles={{
