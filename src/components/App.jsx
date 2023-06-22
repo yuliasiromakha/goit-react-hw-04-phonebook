@@ -1,102 +1,90 @@
-import React, { Component } from "react";
 import PhonebookTitle from "./PhonebookTitle/PhonebookTitle";
 import ContactForm from "./ContactForm/ContactForm";
 import ContactList from "./ContactList/ContactList";
 import FilterContact from "./FilterContact/FilterContact";
 
+import { useEffect, useState } from "react";
 import './general.css'
 
-export class App extends Component {
+const App = () => {
+  
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
 
-  state = {
-      contacts: [],
-      filter: "",
-    };
-
-  addContact = (contact) => {
-    const { contacts } = this.state;
+  const addContact = (contact) => {
     const isDuplicate = contacts.some(
       (existingContact) => existingContact.name === contact.name
     );
     if (isDuplicate) {
       alert("Contact already exists!");
     } else {
-      this.setState((prevState) => ({
-        contacts: [...prevState.contacts, contact],
-      }));
+      setContacts((prevContacts) => [...prevContacts, contact]);
     }
   };
 
-  deleteContact = (id) => {
-    this.setState((prevState) => ({
-      contacts: prevState.contacts.filter((contact) => contact.id !== id),
-    }));
+  const deleteContact = (id) => {
+    setContacts((prevContacts) => prevContacts.filter((contact) => contact.id !== id));
   };
 
-  handleFilterChange = (filter) => {
-    this.setState({ filter });
+  const handleFilterChange = (filterValue) => {
+    setFilter(filterValue.toLowerCase());
   };
+  
 
-  componentDidMount() {
-    const contacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts);
+  useEffect(() => {
+    const storedContacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(storedContacts);
+
 
     if (parsedContacts) {
-      this.setState({contacts: parsedContacts })
+      setContacts(parsedContacts)
     }
-  }
+  }, []);
 
-  componentDidUpdate(prevProps, prevState) {
+  useEffect(() => {
+    console.log('contacts were updated');
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-    if (this.state.contacts !== prevState.contacts ) {
-      console.log('contacts were updated');
+  const filteredContacts = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(filter)
+  );
 
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
 
-  render() {
-    const { contacts, filter } = this.state;
+  return (
+    <div className="general__positioning">
 
-    const filteredContacts = contacts.filter((contact) =>
-      contact.name.toLowerCase().includes(filter)
-    );
-
-    return (
-      <div className="general__positioning">
-
-        <div className="border__style">
-          
-          <PhonebookTitle
-            title="Name"
-            styles={{
-              fontSize: 15,
-              marginBottom: 0,
-            }}
-          />
-          <ContactForm onAddContact={this.addContact} />
-        </div>
-
+      <div className="border__style">
+        
         <PhonebookTitle
-          title="Contacts"
+          title="Name"
           styles={{
-            fontSize: 25,
+            fontSize: 15,
             marginBottom: 0,
           }}
         />
-
-        <FilterContact
-          filter={filter}
-          onFilterChange={this.handleFilterChange}
-        />
-
-        <ContactList
-          contacts={filteredContacts}
-          onDeleteContact={this.deleteContact}
-        />
+        <ContactForm onAddContact={addContact} />
       </div>
-    );
-  }
+
+      <PhonebookTitle
+        title="Contacts"
+        styles={{
+          fontSize: 25,
+          marginBottom: 0,
+        }}
+      />
+
+      <FilterContact
+        filter={filter}
+        onFilterChange={handleFilterChange}
+      />
+
+      <ContactList
+        contacts={filteredContacts}
+        onDeleteContact={deleteContact}
+      />
+    </div>
+  );
 }
 
 export default App;

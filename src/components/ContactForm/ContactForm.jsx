@@ -1,32 +1,33 @@
-import React, { Component } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import PhonebookTitle from "../PhonebookTitle/PhonebookTitle";
 import { nanoid } from "nanoid";
 import AddContactButton from "components/AddContactButton/AddContactButton";
 
-class ContactForm extends Component {
-  static propTypes = {
-    onAddContact: PropTypes.func.isRequired,
-  };
+const ContactForm = ({ onAddContact }) => {
 
-  state = {
-    contacts: [],
-    filter: "",
-    name: "",
-    number: "",
-  };
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  handleInputChange = (event) => {
+  const handleInputChange = (event) => {
     const { name, value } = event.target;
-    this.setState((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+      
+      case 'number':
+        setNumber(value);
+        break;
+
+      default:
+        break;
+    }
   };
 
-  onSubmitForm = (event) => {
+  const onSubmitForm = (event) => {
     event.preventDefault();
-    const { name, number } = this.state;
 
     const contact = {
       id: nanoid(),
@@ -34,48 +35,45 @@ class ContactForm extends Component {
       number,
     };
 
-    this.props.onAddContact(contact);
-    this.setState((prevState) => ({
-      ...prevState,
-      contacts: [...prevState.contacts, contact],
-      name: "",
-      number: "",
-    }));
-  };
+    onAddContact(contact)
+    setName('');
+    setNumber('');
 
-  render() {
-    const { name, number } = this.state;
-
-    return (
-      <div>
-        <form onSubmit={this.onSubmitForm}>
-          <input
-            type="text"
-            name="name"
-            value={name}
-            onChange={this.handleInputChange}
-          />
-
-          <PhonebookTitle
-            title="Number"
-            styles={{
-              fontSize: 15,
-              marginBottom: 0,
-            }}
-          />
-
-          <input
-            type="tel"
-            name="number"
-            value={number}
-            onChange={this.handleInputChange}
-          />
-
-          <AddContactButton styles={{ marginLeft: 30 }} />
-        </form>
-      </div>
-    );
   }
+
+  return (
+    <div>
+      <form onSubmit={onSubmitForm}>
+        <input
+          type="text"
+          name="name"
+          value={name}
+          onChange={handleInputChange}
+        />
+
+        <PhonebookTitle
+          title="Number"
+          styles={{
+            fontSize: 15,
+            marginBottom: 0,
+          }}
+        />
+
+        <input
+          type="tel"
+          name="number"
+          value={number}
+          onChange={handleInputChange}
+        />
+
+        <AddContactButton styles={{ marginLeft: 30 }} />
+      </form>
+    </div>
+  );
 }
+
+ContactForm.propTypes = {
+  onAddContact: PropTypes.func.isRequired,
+};
 
 export default ContactForm;
