@@ -16,10 +16,11 @@ const App = () => {
       (existingContact) => existingContact.name === contact.name
     );
     if (isDuplicate) {
-      alert("Contact already exists!");
-    } else {
-      setContacts((prevContacts) => [...prevContacts, contact]);
-    }
+      return alert("Contact already exists!");
+    } 
+    
+    setContacts((prevContacts) => [...prevContacts, contact]);
+    
   };
 
   const deleteContact = (id) => {
